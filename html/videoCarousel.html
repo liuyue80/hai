@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en"> 
+    <head> 
+        <meta charset="UTF-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <title>Simple HTML5 Video Player</title> 
+        <style>
+       * {
+            margin: 0px;
+            padding: 0px;
+            touch-action: pan-y;
+            text-align: center;
+        }    
+        #myVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            z-index: 300;
+            border-radius: 20px;
+        }
+        .input-container {
+            position: absolute;
+            display: none;
+            transform: translate(1%, 70%);//上下左右移动
+            //width: max(400px, 90%);
+            z-index: 200;
+            opacity: 0.7;
+        }
+        #video-link-input {
+            margin-bottom: 23px;
+            margin-top: 18px;
+            border-radius: 5px; 
+            height: 20px;
+            width: 220px;
+        }
+        #confirm-button {
+            margin-top: 18px;
+            font-size: 12px; 
+            margin-left: 5px;
+            height: 23px;
+            //border-radius: 1px; 
+        }
+    </style> 
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script> 
+    </head> 
+    <body> 
+        <div class="input-container"> 
+            <input type="text" contenteditable="true" id="video-link-input" placeholder="添加本地,、网络视频，空为随机视频"> <button id="confirm-button" type="button">确认</button> 
+            <input type="file" id="videoInput" accept="video/*"> 
+            <button style="font-size:20px;background-color:#FFFFFF;border:0;border-radius:5px;" id="mute-button" onclick="muteVideo()">静音</button> 
+        </div> 
+        <video id="myVideo" loop="loop" preload="auto" autoplay="autoplay" poster="https://hikerfans.com/weisyr/img/Loading1.gif" src=""> 
+        </video> 
+        <script> 
+  eval(fy_bridge_app.getInternalJs());
+  window.request = window.request00 || window.request;
+
+  let cname = fba.getVar("小程序名");
+  let 视频高度 = fba.getVar(cname + "视频高度");
+  let 视频宽度 = fba.getVar(cname + "视频宽度");
+  let 视频圆角 = fba.getVar(cname + "视频圆角");
+  player = document.getElementById("myVideo");
+  var y = Math.floor(Math.random() * 32) + 1
+  url = 'https://www.adwest.cn/dndtbz/p-' + y + '.html';
+  player.style.height = 视频高度 + 'px';
+  player.style.width = 视频宽度;
+  player.style.borderRadius = 视频圆角 + 'px';
+  var burl = 'hiker://files/yuan/videoCarousel.txt';
+  var x = request(burl).substring(0,500)
+
+        if (request(burl) == '') {
+              players()
+            }
+   document.getElementById("myVideo").addEventListener("dblclick", function() {
+    console.log("dblclick");
+    FullScreen();
+});
+  function FullScreen() {
+	 if (player.requestFullscreen) {
+		   player.requestFullscreen();
+		        player.play();
+		    } else 
+     if (player.mozRequestFullScreen) {
+		        player.mozRequestFullScreen();
+		        player.play();
+		    } else 
+     if (player.webkitRequestFullScreen) {
+		        player.webkitRequestFullScreen();
+		        player.play();
+		    }
+		}	         
+            
+ function adjustPlaybackSpeed() { 
+    if(localStorage.getItem("isMuted") == 'false') {
+                player.playbackRate = 1;
+                } else {
+                player.playbackRate = 1;
+                }  
+      }                
+   function updateMuteButton() {
+    const isMuted = player.muted;
+    const button = document.getElementById("mute-button");
+    button.innerHTML = isMuted ? "🔇" : "🔊";
+} 
+  
+  function muteVideo() {
+    if (player.muted) {
+        player.muted = false;
+    } else {
+        player.muted = true;
+    }
+    localStorage.setItem("isMuted", player.muted); 
+    updateMuteButton();  
+    adjustPlaybackSpeed()   
+}
+    
+   window.onload = function() {   
+    var isMuted = localStorage.getItem("isMuted")
+    if(isMuted == null) {
+    isMuted = true;
+    }  
+    var currentTime = localStorage.getItem(x + "currentTime") 
+    if(currentTime == null) {
+    currentTime = 0;
+    }  
+    player.muted = JSON.parse(isMuted)
+    player.currentTime = JSON.parse(currentTime)
+    updateMuteButton();  
+    adjustPlaybackSpeed()  
+    
+};
+
+function updateCurrentTime() {
+    const currentTime = player.currentTime;
+    localStorage.setItem(x + "currentTime", currentTime);
+}
+
+player.ontimeupdate = function() {
+    updateCurrentTime();
+   
+};
+  
+  document.addEventListener("DOMContentLoaded", function () { 
+  document.getElementById("videoInput").addEventListener("change", function (event) {
+            var file = event.target.files[0];
+            if (file) {
+            if (file.type.startsWith("video")) {
+                var fileReader = new FileReader();
+
+                fileReader.onload = function (e) {
+                    var dataURL = e.target.result;
+                    fba.writeFile(burl, dataURL)
+                    updateCurrentTime()
+                    var videourl = request(burl);
+                    player.src = dataURL
+                    document.getElementsByClassName("input-container")[0].style.display = "none";
+                adjustPlaybackSpeed()
+                
+                };
+                fileReader.readAsDataURL(file);
+                
+                } else {
+        alert("您选择的文件不是视频文件。请选择一个视频文件。");
+      }
+            }
+        });             
+    })                                
+
+  function contentLoaded() {
+      var videourl = request(burl);
+      var videoLink = videourl
+      var player = document.getElementById("myVideo");
+
+      if (navigator.onLine) {
+          players();
+      } else {
+          player.src = videoLink;
+      }
+  }
+  // 注册DOMContentLoaded事件监听器
+  document.addEventListener("DOMContentLoaded", eval(contentLoaded), false);
+  // 注册online事件监听器
+  window.addEventListener("online", eval(contentLoaded), false);
+  // 注册offline事件监听器
+  window.addEventListener("offline", eval(contentLoaded), false);
+
+  player.addEventListener("click", function() {
+      var inputContainer = document.getElementsByClassName("input-container")[0];
+      if (localStorage.getItem("ss") === null || localStorage.getItem("ss") === "1") {
+          inputContainer.style.display = "block";
+          localStorage.setItem("ss", '0');
+      } else {
+          inputContainer.style.display = "none";
+          localStorage.setItem("ss", '1');
+      }
+  });
+  
+  document.addEventListener("DOMContentLoaded", () => {
+      const input = document.getElementById("video-link-input");
+      const confirmButton = document.getElementById("confirm-button");
+      confirmButton.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          const link = document.createElement("a");
+          link.href = input.value;
+          fba.writeFile(burl, link.href);
+          updateCurrentTime()
+          var videourl = request(burl);
+          if (!/videoCarousel/.test(videourl) && /\.mp4|\.m3u8|\.mp3|\.flac|\.ogg|\.m4a|\.wav|\.opus|\.mkv|\.avi|\.mov|\.rmvb|\.webm|\.flv|\.m4v|\.ts|video_mp4/.test(videourl)) {
+              player.src = videourl
+              localStorage.setItem("ss", '1');
+              adjustPlaybackSpeed()
+          } else {
+              alert('你输入的网址错误。已播放随机网络视频。');
+              fba.writeFile(burl, '')
+              players();
+          }
+          document.getElementsByClassName("input-container")[0].style.display = "none";
+      });
+  });
+
+  function players() {
+      fetch(url, {
+              method: 'GET'
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error("网络请求失败，正在重新尝试...");
+              }
+              return response.text();
+          })
+          .then(data => {
+              list = data.match(/g1-frame" href="(.*?html)/g);
+              i = Math.floor(Math.random() * list.length);
+              urls = 'https://www.adwest.cn';
+              url = urls + list[i].split('"')[2];
+              return fetch(url, {
+                  method: 'GET'
+              });
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error("网络请求失败，正在重新尝试...");
+              }
+              return response.text();
+          })
+          .then(data => {
+              data = urls + data.match(/src="(.*?\.mp4)"/)[1];
+              var videourl = request(burl);
+
+              if (/videoCarousel/.test(videourl) || !/\.mp4|\.m3u8|\.mp3|\.flac|\.ogg|\.m4a|\.wav|\.opus|\.mkv|\.avi|\.mov|\.rmvb|\.webm|\.flv|\.m4v|\.ts|video_mp4|base64/.test(videourl)) {
+                  player.src = data;
+                  adjustPlaybackSpeed()
+                  localStorage.setItem("ss", '1');
+              } else {
+                  player.src = videourl;
+                  adjustPlaybackSpeed()
+                  localStorage.setItem("ss", '1');
+              }
+          })
+          .catch(error => {
+              console.log(error);
+              players();
+          });
+  }
+
+
+  window.onblur = function() {
+      player.play();
+  }
+  window.onfocus = function() {
+      if (player.paused || player.ended) {
+          player.play();
+      }
+  };
+
+  let startTime = null;
+  let firstTouch = null;
+  let touchTimer = null;
+  document.addEventListener("touchstart", (e) => {
+      startTime = Date.now();
+      //firstTouch = e.touches[0];
+      clearTimeout(touchTimer);
+      touchTimer = setTimeout(() => {
+          const link = document.createElement("a");
+          link.href = player.src;
+          link.download = "video.mp4";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      }, 750);
+  }, {
+      passive: false
+  });
+
+  document.addEventListener("touchend", (e) => {
+      clearTimeout(touchTimer);
+  }, {
+      passive: false
+  });
+    
+  let time = new Date().getDate().toString();
+  if (localStorage.getItem('time', '') != time) {
+      localStorage.setItem('time', time);
+      var 本地 = 'hiker://files/yuan/videoCarousel.html';
+      var 远程 = 'https://gitcode.net/liuzaoyue/hai/-/raw/master/videoCarousel.html';
+      var version = '2024032703'+'，在我的主页书签管理里能够编辑视频高度，宽度和圆角自己调节，如果没有到道长仓库从新导入，增加🔊按扭调节静音和非静音，双击窗口全屏功能。';
+      var nowVersion = request(远程).match(/version = '(.*)'/)[1].replace(/\'\+\'/, '');
+            
+      if (nowVersion != version) {
+          fba.writeFile(本地, request(远程));
+          $$$().x5LazyRule((nowVersion) => {
+              confirm({
+                  title: '更新完成',
+                  content: nowVersion + "，欢迎使用",
+              })
+          }, nowVersion)
+      }
+  }
+    </script>  
+    </body>
+</html>
