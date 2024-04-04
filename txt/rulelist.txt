@@ -1,0 +1,48 @@
+(function () {
+  function generateBoundary(prefix, randomLength) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let boundary = '';
+    for (let i = 0; i < randomLength; i++) { // 根据指定长度生成随机部分
+      boundary += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return `${prefix}${boundary}`; // 返回完整的边界字符串
+  }
+  function putProtocol(url, inhead, body, bounobj) {
+    let defobj = {
+      prefix: '--WebKitFormBoundary',
+      num: 16,
+      fill: [4, 4, 2]
+    }
+    if (bounobj == undefined) {
+      bounobj = defobj;
+    } else {
+      bounobj = Object.assign({}, defobj, bounobj);
+    }
+    //log(bounobj)
+
+    var fill = bounobj.fill.map(count => '-'.repeat(count));
+    //log(fill)
+    var boundary = generateBoundary(bounobj.prefix, bounobj.num);
+    let defhead = {
+      headers: {
+        "User-Agent": MOBILE_UA,
+      },
+      method: 'PUT',
+    }
+    if (inhead.headers && inhead.headers.hasOwnProperty("content-type")) {
+      inhead.headers["content-type"] = inhead.headers["content-type"].replace("${boundary}", boundary);
+    }
+    var head = Object.assign({}, defhead, inhead);
+    if (body) {
+      head.headers.body = Object.keys(body).map(key => {
+        return `${fill[0]}${boundary}\r\nContent-Disposition: form-data; name="${key}"\r\n\r\n${body[key]}`
+      }).join('\r\n') + `\r\n${fill[1]}${boundary}${fill[2]}\r\n`
+    }
+    //log(head)
+    return fetch(url, head);
+  }
+  $.exports={
+     getBoundary:generateBoundary,
+     put:putProtocol
+  }
+})()
