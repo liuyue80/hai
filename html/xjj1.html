@@ -102,7 +102,7 @@
 			        }
 			#options {			
 			  display: none;
-			  transform: translate(1%, 80%);/*上下左右移动*/
+			  transform: translate(1%, 20%);/*上下左右移动*/
 			  flex-wrap: wrap;
 			  //gap: 8px; /* 设置间距 */
 			}
@@ -326,12 +326,45 @@
 		                }, {
 		                    name: "抖音娱乐",
 		                    url: "https://api.linhun.vip/api/yldouyin?apiKey=31585470acf2f6594fafbc3a140799bb",
+		                }, {
+		                    name: "街拍",
+		                    url: "http://159.75.106.60:502/get.php?_t=0" + Math.random(),
+		                }, {
+		                    name: "kan",
+		                    url: "http://www.kankanbb.top/video.php?_t=0" + Math.random()
+		                }, {
+		                    name: "xhn",
+		                    url: "http://xhnzz.xyz/index/index/xjj/video.php?_t=0" + Math.random()
+		                }, {
+		                    name: "抖音",
+		                    url: "https://www.tblist.cn/douyin/video.php?_t=0" + Math.random()
+		                }, {
+		                    name: "梅梅",
+		                    url: "http://dianyingzhijia.tpddns.cn:2021/douyin.com/963783524/api.php?_t=0" + Math.random()
+		                }, {
+		                    name: "游艇",
+		                    url: "https://play.cnnnnet.com/youtinggirl.php?_t=0" + Math.random(),
+		                }, {
+		                    name: "DG国内",
+		                    url: "https://diskgirl.com/get/get1.php"
+		                }, {
+		                    name: "DG国外",
+		                    url: "https://diskgirl.com/get/get2.php",
+		                }, {
+		                    name: "极致",
+		                    url: "https://p.txqq.pro/api/girls?limit=1",
 		                }
 		            ];
 		            for (var j = 6; j > 0; j--) {
 		                options.unshift({
 		                    name: '源0' + j,
 		                    url: 'http://119.91.196.247:7778/xjj/get' + j + '.php'
+		                });
+		            }
+		            for (var j = 1; j < 9; j++) {
+		                options.push({
+		                    name: 'pf0' + j,
+		                    url: 'https://pf129.com/xjj/get/get' + j + '.php'
 		                });
 		            }
 		            
@@ -409,8 +442,9 @@ if(null === url) {
         $.get(url, function(data, status) {
             if (status == status) {
             
-                if (/xxgeek|meinv|67b63/.test(url)) {
-                    data = data.match(/http.*?\.mp4/)[0];
+                if (/xxgeek|meinv|67b63|txqq/.test(url)) {
+                    data = data.match(/.*(http.*?\.mp4)/)[1];
+                    fba.log(data)
                 }
                 if (/linhun|wudada/.test(url)) {
                     data = data.video || data.视频 || data.data;
